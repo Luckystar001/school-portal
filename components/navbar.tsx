@@ -5,11 +5,14 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
+import { Menu, X } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 
 export function Navbar() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const supabase = createClient();
 
   const logoUrl =
@@ -106,9 +109,41 @@ export function Navbar() {
             ) : (
               <div className="w-20 md:w-24 h-8 md:h-10 bg-white/5 animate-pulse rounded-full" />
             )}
+            {/* Hamburger Mobile Menu Toggle */}
+            <button
+              className="lg:hidden text-slate-400 hover:text-white transition-colors p-1"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-label="Toggle Menu"
+            >
+              {isMobileMenuOpen ? <X className="w-6 h-6 md:w-7 md:h-7" /> : <Menu className="w-6 h-6 md:w-7 md:h-7" />}
+            </button>
           </div>
         </div>
       </div>
+      {/* Mobile Menu Panel */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="lg:hidden bg-slate-950/95 backdrop-blur-xl border-b border-white/5 overflow-hidden"
+          >
+            <div className="px-4 py-6 flex flex-col gap-4">
+              {["Home", "About", "Academics", "Staff", "Contact"].map((item) => (
+                <Link
+                  key={item}
+                  href={item === "Home" ? "/" : `/${item.toLowerCase()}`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="text-sm font-black text-slate-400 hover:text-white transition-colors uppercase tracking-[0.2em] block py-3 border-b border-white/5 last:border-none"
+                >
+                  {item}
+                </Link>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 }

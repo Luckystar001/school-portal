@@ -178,34 +178,66 @@ export default function StudentDashboard() {
         66,
       );
 
-      autoTable(doc, {
-        startY: 82,
-        head: [
-          [
-            "S/N",
-            "SUBJECT",
-            "CA (40%)",
-            "EXAM (60%)",
-            "TOTAL",
-            "GRADE",
-            "AVG",
-            "POS",
+      // Try using the plugin method on doc, fallback to the imported function
+      if (typeof (doc as any).autoTable === "function") {
+        (doc as any).autoTable({
+          startY: 82,
+          head: [
+            [
+              "S/N",
+              "SUBJECT",
+              "CA (40%)",
+              "EXAM (60%)",
+              "TOTAL",
+              "GRADE",
+              "AVG",
+              "POS",
+            ],
           ],
-        ],
-        body: results.map((res: any, i: number) => [
-          i + 1,
-          res.subject_name?.toUpperCase() || "N/A",
-          res.ca_score || "0",
-          res.exam_score || "0",
-          res.total_score || "0",
-          res.grade || "N/A",
-          res.class_avg || "N/A",
-          res.subject_pos || "N/A",
-        ]),
-        headStyles: { fillColor: [22, 101, 52], fontSize: 8, halign: "center" },
-        styles: { fontSize: 8, cellPadding: 4 },
-        theme: "grid",
-      });
+          body: results.map((res: any, i: number) => [
+            i + 1,
+            res.subject_name?.toUpperCase() || "N/A",
+            res.ca_score || "0",
+            res.exam_score || "0",
+            res.total_score || "0",
+            res.grade || "N/A",
+            res.class_avg || "N/A",
+            res.subject_pos || "N/A",
+          ]),
+          headStyles: { fillColor: [22, 101, 52], fontSize: 8, halign: "center" },
+          styles: { fontSize: 8, cellPadding: 4 },
+          theme: "grid",
+        });
+      } else if (typeof autoTable === "function") {
+        autoTable(doc, {
+          startY: 82,
+          head: [
+            [
+              "S/N",
+              "SUBJECT",
+              "CA (40%)",
+              "EXAM (60%)",
+              "TOTAL",
+              "GRADE",
+              "AVG",
+              "POS",
+            ],
+          ],
+          body: results.map((res: any, i: number) => [
+            i + 1,
+            res.subject_name?.toUpperCase() || "N/A",
+            res.ca_score || "0",
+            res.exam_score || "0",
+            res.total_score || "0",
+            res.grade || "N/A",
+            res.class_avg || "N/A",
+            res.subject_pos || "N/A",
+          ]),
+          headStyles: { fillColor: [22, 101, 52], fontSize: 8, halign: "center" },
+          styles: { fontSize: 8, cellPadding: 4 },
+          theme: "grid",
+        });
+      }
 
       const finalY = ((doc as any).lastAutoTable?.finalY || 150) + 15;
 
@@ -234,7 +266,7 @@ export default function StudentDashboard() {
       console.error("PDF Error:", error);
       alert(
         "There was an issue generating your document: " +
-          (error?.message || "Unknown error"),
+          (error?.stack || error?.message || "Unknown error"),
       );
     }
   };
@@ -422,7 +454,7 @@ export default function StudentDashboard() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
-            className="hidden xl:flex flex-col gap-6 h-full w-full"
+            className="flex flex-col gap-6 h-full w-full"
           >
             {/* Profile Ultra-Card */}
             <div className="bg-white/70 backdrop-blur-xl border border-white p-8 rounded-[3rem] shadow-[0_8px_40px_rgba(0,0,0,0.03)] flex flex-col items-center text-center relative overflow-hidden group">
