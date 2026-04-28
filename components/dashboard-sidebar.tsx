@@ -78,7 +78,7 @@ export function DashboardSidebar({ user }: { user: User | null }) {
         {/* Top Section: Official Logo Branding */}
         <div className="p-6 border-b border-white/5 mt-16 md:mt-0 flex-none bg-white/5">
           <Link
-            href="/dashboard"
+            href="/"
             className="flex flex-col items-center gap-4 group"
           >
             <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center p-2 shadow-inner transition-transform group-hover:scale-105">
