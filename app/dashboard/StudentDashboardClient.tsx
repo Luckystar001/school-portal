@@ -43,6 +43,7 @@ const staggerContainer = {
 export default function StudentDashboard() {
   const supabase = createClient();
   const [loading, setLoading] = useState(true);
+  const [isDownloading, setIsDownloading] = useState(false);
   const [profile, setProfile] = useState<any>(null);
   const [results, setResults] = useState<any[]>([]);
 
@@ -131,6 +132,7 @@ export default function StudentDashboard() {
 
   const downloadReportCard = async () => {
     if (typeof window === "undefined" || !profile) return;
+    setIsDownloading(true);
 
     try {
       const doc = new jsPDF();
@@ -268,6 +270,8 @@ export default function StudentDashboard() {
         "There was an issue generating your document: " +
           (error?.stack || error?.message || "Unknown error"),
       );
+    } finally {
+      setIsDownloading(false);
     }
   };
 
@@ -337,7 +341,7 @@ export default function StudentDashboard() {
               initial="hidden"
               animate="visible"
               variants={staggerContainer}
-              className="grid grid-cols-2 md:grid-cols-4 gap-4"
+              className="grid grid-cols-1 md:grid-cols-3 gap-4"
             >
               <CustomStatCard
                 title="Grade Average"
@@ -345,7 +349,7 @@ export default function StudentDashboard() {
                 trend="+2.4%"
                 color="indigo"
                 icon={TrendingUp}
-                colSpan="col-span-2"
+                colSpan="md:col-span-1"
               />
               <CustomStatCard
                 title="Enrolled Subjects"
@@ -353,7 +357,7 @@ export default function StudentDashboard() {
                 trend="Current"
                 color="rose"
                 icon={BookOpen}
-                colSpan="col-span-1"
+                colSpan="md:col-span-1"
               />
               <CustomStatCard
                 title="Term Attendance"
@@ -361,7 +365,7 @@ export default function StudentDashboard() {
                 trend="Perfect"
                 color="amber"
                 icon={CalendarDays}
-                colSpan="col-span-1"
+                colSpan="md:col-span-1"
               />
             </motion.div>
 
@@ -490,9 +494,14 @@ export default function StudentDashboard() {
 
               <button
                 onClick={downloadReportCard}
-                className="w-full py-4 rounded-[1.5rem] bg-slate-900 text-white font-bold text-sm tracking-wide shadow-xl shadow-slate-900/20 hover:bg-indigo-600 transition-colors flex items-center justify-center gap-3"
+                disabled={isDownloading}
+                className="w-full py-4 rounded-[1.5rem] bg-slate-900 text-white font-bold text-sm tracking-wide shadow-xl shadow-slate-900/20 hover:bg-indigo-600 transition-colors flex items-center justify-center gap-3 disabled:opacity-70 disabled:cursor-wait"
               >
-                <Download className="w-4 h-4" /> Download Result
+                {isDownloading ? (
+                  <><Loader2 className="w-4 h-4 animate-spin" /> Generating PDF...</>
+                ) : (
+                  <><Download className="w-4 h-4" /> Download Result</>
+                )}
               </button>
             </div>
 
@@ -559,24 +568,24 @@ function CustomStatCard({
         hidden: { opacity: 0, scale: 0.95 },
         visible: { opacity: 1, scale: 1 },
       }}
-      className={`bg-white/60 backdrop-blur-xl border border-white/80 p-6 md:p-8 rounded-[1.5rem] md:rounded-[2.5rem] shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden group ${colSpan}`}
+      className={`bg-white/60 backdrop-blur-xl border border-white/80 p-4 md:p-5 lg:p-6 rounded-[1.5rem] md:rounded-[2rem] shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden group flex flex-col justify-between ${colSpan}`}
     >
-      <div className="flex justify-between items-start mb-8 md:mb-12">
+      <div className="flex justify-between items-start mb-6 md:mb-8 gap-2 flex-wrap">
         <div
-          className={`p-3 md:p-4 rounded-xl md:rounded-[1.5rem] ${variants[color]} group-hover:scale-110 transition-transform duration-500`}
+          className={`p-2 md:p-3 lg:p-4 rounded-xl md:rounded-[1.2rem] ${variants[color]} group-hover:scale-110 transition-transform duration-500 shrink-0`}
         >
-          <Icon className="w-5 h-5 md:w-6 md:h-6" />
+          <Icon className="w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6" />
         </div>
-        <span className="inline-block px-2 md:px-3 py-1 bg-white border border-slate-100 rounded-full text-[8px] md:text-[9px] font-black uppercase text-slate-500 tracking-widest">
+        <span className="inline-block px-2 lg:px-3 py-1 bg-white border border-slate-100 rounded-full text-[7px] md:text-[8px] lg:text-[9px] font-black uppercase text-slate-500 tracking-wider break-all max-w-full text-center">
           {trend}
         </span>
       </div>
 
       <div>
-        <p className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-1 md:mb-2">
+        <p className="text-[8px] md:text-[9px] lg:text-[10px] font-black uppercase tracking-[0.15em] text-slate-400 mb-1 lg:mb-2 leading-snug">
           {title}
         </p>
-        <p className="text-3xl md:text-4xl font-black text-slate-800 tracking-[-0.05em]">
+        <p className="text-2xl md:text-3xl 2xl:text-4xl font-black text-slate-800 tracking-[-0.05em] break-words">
           {value}
         </p>
       </div>
