@@ -94,7 +94,6 @@ export default function Home() {
         <div className="max-w-7xl mx-auto relative z-10 w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center pt-2 md:pt-4">
           {/* Left Column: Typography & Call to Actions */}
           <div className="lg:col-span-8 flex flex-col items-center lg:items-start text-center lg:text-left">
-
             <div className="space-y-2 md:space-y-4 mb-6 md:mb-8 w-full">
               <motion.h1
                 initial={{ opacity: 0, y: 30 }}
@@ -134,7 +133,8 @@ export default function Home() {
                 className="bg-blue-600 hover:bg-blue-500 text-white font-black rounded-2xl h-14 md:h-16 px-8 md:px-10 shadow-[0_0_40px_rgba(37,99,235,0.4)] transition-all hover:scale-105 active:scale-95 border-none text-xs md:text-sm lg:text-base uppercase tracking-widest"
               >
                 <Link href="/auth/sign-up">
-                  Start Admissions <ChevronRight className="ml-2 w-4 h-4 md:w-5 md:h-5" />
+                  Start Admissions{" "}
+                  <ChevronRight className="ml-2 w-4 h-4 md:w-5 md:h-5" />
                 </Link>
               </Button>
               <Button
@@ -150,7 +150,7 @@ export default function Home() {
 
           {/* Right Column: Floating Glassmorphic Cards Showcase */}
           <div className="lg:col-span-4 hidden lg:block relative h-full min-h-[500px]">
-              {/* Top Graphic Removed */}
+            {/* Top Graphic Removed */}
 
             <motion.div
               initial={{ opacity: 0, x: 50 }}
@@ -485,7 +485,7 @@ export default function Home() {
             </ul>
           </div>
 
-          <div className="md:col-span-2">
+          <div className="md:col-span-2 ">
             <h4 className="font-black text-[10px] uppercase tracking-[0.2em] text-[#F2C12E] mb-6">
               Portals
             </h4>
@@ -493,7 +493,7 @@ export default function Home() {
               <li>
                 <Link
                   href="/auth/login"
-                  className="hover:text-white transition-colors duration-300 flex items-center gap-2"
+                  className="hover:text-white transition-colors duration-300 items-center gap-2"
                 >
                   Student Portal
                 </Link>
@@ -501,7 +501,7 @@ export default function Home() {
               <li>
                 <Link
                   href="/auth/login"
-                  className="hover:text-white transition-colors duration-300 flex items-center gap-2"
+                  className="hover:text-white transition-colors duration-300  items-center gap-2"
                 >
                   Staff Portal
                 </Link>
@@ -509,7 +509,7 @@ export default function Home() {
               <li>
                 <Link
                   href="/auth/login"
-                  className="hover:text-white transition-colors duration-300 flex items-center gap-2"
+                  className="hover:text-white transition-colors duration-300  items-center gap-2"
                 >
                   Admin Portal
                 </Link>
@@ -540,21 +540,24 @@ function TopBannerTypewriter() {
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (!isDeleting) {
-        if (text.length < fullText.length) {
-          setText(fullText.slice(0, text.length + 1));
+    const timeout = setTimeout(
+      () => {
+        if (!isDeleting) {
+          if (text.length < fullText.length) {
+            setText(fullText.slice(0, text.length + 1));
+          } else {
+            setTimeout(() => setIsDeleting(true), 5000); // Wait 5s before erasing
+          }
         } else {
-          setTimeout(() => setIsDeleting(true), 5000); // Wait 5s before erasing
+          if (text.length > 0) {
+            setText(fullText.slice(0, text.length - 1));
+          } else {
+            setIsDeleting(false);
+          }
         }
-      } else {
-        if (text.length > 0) {
-          setText(fullText.slice(0, text.length - 1));
-        } else {
-          setIsDeleting(false);
-        }
-      }
-    }, isDeleting ? 40 : 100);
+      },
+      isDeleting ? 40 : 100,
+    );
 
     return () => clearTimeout(timeout);
   }, [text, isDeleting]);
