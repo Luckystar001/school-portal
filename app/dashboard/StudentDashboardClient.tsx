@@ -22,6 +22,7 @@ import {
 import CompleteProfile from "../complete-profile/page";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
+import FeePayment from "@/components/FeePayment";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -51,7 +52,9 @@ export default function StudentDashboard() {
     let isMounted = true;
     const fetchDashboardData = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
         const user = session?.user;
         if (!user) {
           if (typeof window !== "undefined")
@@ -206,7 +209,11 @@ export default function StudentDashboard() {
             res.class_avg || "N/A",
             res.subject_pos || "N/A",
           ]),
-          headStyles: { fillColor: [22, 101, 52], fontSize: 8, halign: "center" },
+          headStyles: {
+            fillColor: [22, 101, 52],
+            fontSize: 8,
+            halign: "center",
+          },
           styles: { fontSize: 8, cellPadding: 4 },
           theme: "grid",
         });
@@ -235,7 +242,11 @@ export default function StudentDashboard() {
             res.class_avg || "N/A",
             res.subject_pos || "N/A",
           ]),
-          headStyles: { fillColor: [22, 101, 52], fontSize: 8, halign: "center" },
+          headStyles: {
+            fillColor: [22, 101, 52],
+            fontSize: 8,
+            halign: "center",
+          },
           styles: { fontSize: 8, cellPadding: 4 },
           theme: "grid",
         });
@@ -467,15 +478,29 @@ export default function StudentDashboard() {
               <div className="relative mt-8 mb-6">
                 <div className="w-28 h-28 rounded-full bg-white p-2 shadow-2xl shadow-indigo-100 relative z-10">
                   <div className="w-full h-full rounded-full bg-slate-100 flex items-center justify-center overflow-hidden border border-slate-100">
-                    {profile?.avatar_url || profile?.profile_image_url || profile?.image_url ? (
-                      <img 
+                    {profile?.avatar_url ||
+                    profile?.profile_image_url ||
+                    profile?.image_url ? (
+                      <img
                         src={
-                          ((profile?.avatar_url || profile?.profile_image_url || profile?.image_url) as string).startsWith('http') 
-                          ? (profile?.avatar_url || profile?.profile_image_url || profile?.image_url) 
-                          : supabase.storage.from("avatars").getPublicUrl(profile?.avatar_url || profile?.profile_image_url || profile?.image_url).data.publicUrl
-                        } 
-                        alt="Profile" 
-                        className="w-full h-full object-cover" 
+                          (
+                            (profile?.avatar_url ||
+                              profile?.profile_image_url ||
+                              profile?.image_url) as string
+                          ).startsWith("http")
+                            ? profile?.avatar_url ||
+                              profile?.profile_image_url ||
+                              profile?.image_url
+                            : supabase.storage
+                                .from("avatars")
+                                .getPublicUrl(
+                                  profile?.avatar_url ||
+                                    profile?.profile_image_url ||
+                                    profile?.image_url,
+                                ).data.publicUrl
+                        }
+                        alt="Profile"
+                        className="w-full h-full object-cover"
                       />
                     ) : (
                       <User className="w-10 h-10 text-slate-400" />
@@ -498,11 +523,53 @@ export default function StudentDashboard() {
                 className="w-full py-4 rounded-[1.5rem] bg-slate-900 text-white font-bold text-sm tracking-wide shadow-xl shadow-slate-900/20 hover:bg-indigo-600 transition-colors flex items-center justify-center gap-3 disabled:opacity-70 disabled:cursor-wait"
               >
                 {isDownloading ? (
-                  <><Loader2 className="w-4 h-4 animate-spin" /> Generating PDF...</>
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" /> Generating
+                    PDF...
+                  </>
                 ) : (
-                  <><Download className="w-4 h-4" /> Download Result</>
+                  <>
+                    <Download className="w-4 h-4" /> Download Result
+                  </>
                 )}
               </button>
+            </div>
+
+            <div className="bg-slate-900 rounded-[2.5rem] p-8 text-white shadow-2xl relative overflow-hidden">
+              {/* Decorative background element */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 blur-3xl rounded-full -mr-16 -mt-16" />
+
+              <div className="relative z-10">
+                <div className="flex justify-between items-center mb-8">
+                  <div>
+                    <h3 className="text-sm font-black uppercase tracking-[0.3em] text-blue-400 mb-1">
+                      Financial Status
+                    </h3>
+                    <p className="text-2xl font-black tracking-tighter">
+                      Term Tuition Fees
+                    </p>
+                  </div>
+                  <div className="px-4 py-1 bg-red-500/20 border border-red-500/30 rounded-full">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-red-400">
+                      Unpaid
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-baseline gap-2 mb-8">
+                  <span className="text-4xl font-black">₦1000</span>
+                  <span className="text-slate-500 text-xs font-bold uppercase tracking-widest">
+                    Total Balance
+                  </span>
+                </div>
+
+                {/* The Payment Button we installed */}
+                <FeePayment studentProfile={profile} amount={1000} />
+
+                <p className="text-center text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-6">
+                  Secure Payment via Paystack Nigeria
+                </p>
+              </div>
             </div>
 
             {/* Mini Notice Board Element */}
