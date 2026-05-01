@@ -1,5 +1,5 @@
 "use client";
-
+export const dynamic = "force-dynamic";
 import { Navbar } from "@/components/navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion, useScroll, useTransform } from "framer-motion";
