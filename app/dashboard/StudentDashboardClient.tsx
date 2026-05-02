@@ -556,15 +556,38 @@ export default function StudentDashboard() {
                   </div>
                 </div>
 
-                <div className="flex items-baseline gap-2 mb-8">
-                  <span className="text-4xl font-black">₦1000</span>
-                  <span className="text-slate-500 text-xs font-bold uppercase tracking-widest">
-                    Total Balance
-                  </span>
-                </div>
+                {(() => {
+                  const feeMap: Record<string, number> = {
+                    "JSS 1": 100,
+                    "JSS 2": 200,
+                    "JSS 3": 300,
+                    "SSS 1": 400,
+                    "SSS 2": 500,
+                    "SSS 3": 600,
+                    "JSS1": 100,
+                    "JSS2": 200,
+                    "JSS3": 300,
+                    "SSS1": 400,
+                    "SSS2": 500,
+                    "SSS3": 600,
+                  };
 
-                {/* The Payment Button we installed */}
-                <FeePayment studentProfile={profile} amount={1000} />
+                  const studentClass = profile?.classes?.name || "";
+                  const currentFee = feeMap[studentClass] || 1000;
+
+                  return (
+                    <>
+                      <div className="flex items-baseline gap-2 mb-8">
+                        <span className="text-4xl font-black">₦{currentFee.toLocaleString()}</span>
+                        <span className="text-slate-500 text-xs font-bold uppercase tracking-widest">
+                          Total Balance
+                        </span>
+                      </div>
+
+                      <FeePayment studentProfile={profile} amount={currentFee} />
+                    </>
+                  );
+                })()}
 
                 <p className="text-center text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-6">
                   Secure Payment via Paystack Nigeria
