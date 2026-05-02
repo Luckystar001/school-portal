@@ -27,15 +27,13 @@ export async function POST(req: Request) {
     const { reference, metadata, amount, customer } = event.data;
 
     // We use the webhook to INSERT because the frontend insert is blocked by Supabase RLS policies
-    await supabase
-      .from("fee_payments")
-      .insert({
-        reference: reference,
-        student_id: metadata.student_id,
-        email: customer?.email || metadata.custom_fields?.[0]?.value,
-        amount: amount / 100, // Paystack sends amounts in Kobo, convert back to Naira
-        status: "success"
-      });
+    await supabase.from("fee_payments").insert({
+      reference: reference,
+      student_id: metadata.student_id,
+      email: customer?.email || metadata.custom_fields?.[0]?.value,
+      amount: amount / 100, // Paystack sends amounts in Kobo, convert back to Naira
+      status: "success",
+    });
   }
 
   return new NextResponse("Webhook Processed", { status: 200 });
