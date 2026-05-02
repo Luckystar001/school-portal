@@ -594,23 +594,18 @@ export default function StudentDashboard() {
                     <>
                       <div className="flex items-baseline gap-2 mb-8">
                         <span className="text-4xl font-black">
-                          {hasPaidFees ? "₦0" : `₦${currentFee.toLocaleString()}`}
+                          {hasPaidFees ? `₦${paidAmount.toLocaleString()}` : "₦0"}
                         </span>
                         <span className="text-slate-500 text-xs font-bold uppercase tracking-widest">
-                          Total Balance
+                          Amount Paid
                         </span>
                       </div>
 
                       {!hasPaidFees ? (
                         <FeePayment studentProfile={profile} amount={currentFee} />
                       ) : (
-                        <div className="w-full py-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex flex-col items-center justify-center">
-                          <span className="text-emerald-400 font-bold text-sm uppercase tracking-widest mb-1">
-                            Clearance Completed
-                          </span>
-                          <span className="text-emerald-500/80 text-[10px] font-black uppercase tracking-[0.2em]">
-                            Amount Paid: ₦{paidAmount.toLocaleString()}
-                          </span>
+                        <div className="w-full py-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-bold text-sm text-center uppercase tracking-widest">
+                          Clearance Completed
                         </div>
                       )}
                     </>
