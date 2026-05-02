@@ -48,6 +48,7 @@ export default function StudentDashboard() {
   const [profile, setProfile] = useState<any>(null);
   const [results, setResults] = useState<any[]>([]);
   const [hasPaidFees, setHasPaidFees] = useState(false);
+  const [paidAmount, setPaidAmount] = useState<number>(0);
 
   useEffect(() => {
     let isMounted = true;
@@ -78,7 +79,7 @@ export default function StudentDashboard() {
               .order("subject_name", { ascending: true }),
             supabase
               .from("fee_payments")
-              .select("id")
+              .select("id, amount")
               .eq("student_id", user.id)
               .eq("status", "success")
               .limit(1)
@@ -87,8 +88,13 @@ export default function StudentDashboard() {
         if (isMounted) {
           setProfile(profileData);
           setResults(resultsData || []);
-          const feesData = await supabase.from("fee_payments").select("id").eq("student_id", user.id).eq("status", "success");
-          setHasPaidFees((feesData.data && feesData.data.length > 0) ? true : false);
+          const feesData = await supabase.from("fee_payments").select("id, amount").eq("student_id", user.id).eq("status", "success");
+          if (feesData.data && feesData.data.length > 0) {
+            setHasPaidFees(true);
+            setPaidAmount(feesData.data[0].amount || 0);
+          } else {
+            setHasPaidFees(false);
+          }
         }
       } catch (error) {
         console.error("Dashboard Sync Error:", error);
@@ -598,8 +604,13 @@ export default function StudentDashboard() {
                       {!hasPaidFees ? (
                         <FeePayment studentProfile={profile} amount={currentFee} />
                       ) : (
-                        <div className="w-full py-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-bold text-sm text-center uppercase tracking-widest">
-                          Clearance Completed
+                        <div className="w-full py-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex flex-col items-center justify-center">
+                          <span className="text-emerald-400 font-bold text-sm uppercase tracking-widest mb-1">
+                            Clearance Completed
+                          </span>
+                          <span className="text-emerald-500/80 text-[10px] font-black uppercase tracking-[0.2em]">
+                            Amount Paid: ₦{paidAmount.toLocaleString()}
+                          </span>
                         </div>
                       )}
                     </>
