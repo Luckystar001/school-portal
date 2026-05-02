@@ -32,20 +32,32 @@ export default function FeePayment({
   };
 
   const onSuccess = async (reference: any) => {
-    // Attempt to save to Supabase from frontend (will likely fail if RLS is strict)
-    // But we don't care about the error because the Paystack Webhook will insert the record reliably
-    await supabase.from("fee_payments").insert({
-      student_id: studentProfile.id,
-      email: studentProfile.email,
-      amount: amount,
-      reference: reference.reference,
-      status: "success",
-    });
+    try {
+      toast.info("Verifying payment...");
+      
+      // Call our secure backend API to insert the record (bypasses RLS)
+      const res = await fetch("/api/save-payment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          reference: reference.reference,
+          student_id: studentProfile.id,
+          email: studentProfile.email,
+          amount: amount,
+        }),
+      });
 
-    // Always show success and reload, as Paystack has confirmed payment locally
-    // The webhook will handle the actual database insertion in the background
-    toast.success("Transaction Complete. Verifying payment...");
-    setTimeout(() => window.location.reload(), 1500);
+      if (res.ok) {
+        toast.success("Transaction Complete. Fees Updated!");
+        setTimeout(() => window.location.reload(), 1500);
+      } else {
+        console.error("Backend failed to save payment");
+        toast.error("Payment received, but failed to update dashboard. Please contact support.");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("An error occurred while saving the payment.");
+    }
   };
 
   const onClose = () => {

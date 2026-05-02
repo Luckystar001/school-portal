@@ -47,6 +47,7 @@ export default function StudentDashboard() {
   const [isDownloading, setIsDownloading] = useState(false);
   const [profile, setProfile] = useState<any>(null);
   const [results, setResults] = useState<any[]>([]);
+  const [hasPaidFees, setHasPaidFees] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -75,11 +76,19 @@ export default function StudentDashboard() {
               .eq("student_id", user.id)
               .eq("status", "published")
               .order("subject_name", { ascending: true }),
+            supabase
+              .from("fee_payments")
+              .select("id")
+              .eq("student_id", user.id)
+              .eq("status", "success")
+              .limit(1)
           ]);
 
         if (isMounted) {
           setProfile(profileData);
           setResults(resultsData || []);
+          const feesData = await supabase.from("fee_payments").select("id").eq("student_id", user.id).eq("status", "success");
+          setHasPaidFees((feesData.data && feesData.data.length > 0) ? true : false);
         }
       } catch (error) {
         console.error("Dashboard Sync Error:", error);
@@ -549,9 +558,9 @@ export default function StudentDashboard() {
                       Term Tuition Fees
                     </p>
                   </div>
-                  <div className="px-4 py-1 bg-red-500/20 border border-red-500/30 rounded-full">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-red-400">
-                      Unpaid
+                  <div className={`px-4 py-1 border rounded-full ${hasPaidFees ? 'bg-emerald-500/20 border-emerald-500/30' : 'bg-red-500/20 border-red-500/30'}`}>
+                    <span className={`text-[10px] font-black uppercase tracking-widest ${hasPaidFees ? 'text-emerald-400' : 'text-red-400'}`}>
+                      {hasPaidFees ? 'Paid' : 'Unpaid'}
                     </span>
                   </div>
                 </div>
@@ -578,13 +587,21 @@ export default function StudentDashboard() {
                   return (
                     <>
                       <div className="flex items-baseline gap-2 mb-8">
-                        <span className="text-4xl font-black">₦{currentFee.toLocaleString()}</span>
+                        <span className="text-4xl font-black">
+                          {hasPaidFees ? "₦0" : `₦${currentFee.toLocaleString()}`}
+                        </span>
                         <span className="text-slate-500 text-xs font-bold uppercase tracking-widest">
                           Total Balance
                         </span>
                       </div>
 
-                      <FeePayment studentProfile={profile} amount={currentFee} />
+                      {!hasPaidFees ? (
+                        <FeePayment studentProfile={profile} amount={currentFee} />
+                      ) : (
+                        <div className="w-full py-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-bold text-sm text-center uppercase tracking-widest">
+                          Clearance Completed
+                        </div>
+                      )}
                     </>
                   );
                 })()}
