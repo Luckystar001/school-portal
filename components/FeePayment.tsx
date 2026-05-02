@@ -15,7 +15,7 @@ export default function FeePayment({
   const supabase = createClient();
 
   const config = {
-    reference: `LUCKY-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+    reference: new Date().getTime().toString(),
     email: studentProfile.email,
     amount: amount * 100, // Convert Naira to Kobo
     publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!,
