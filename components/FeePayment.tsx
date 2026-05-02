@@ -32,8 +32,9 @@ export default function FeePayment({
   };
 
   const onSuccess = async (reference: any) => {
-    // Save record to Supabase
-    const { error } = await supabase.from("fee_payments").insert({
+    // Attempt to save to Supabase from frontend (will likely fail if RLS is strict)
+    // But we don't care about the error because the Paystack Webhook will insert the record reliably
+    await supabase.from("fee_payments").insert({
       student_id: studentProfile.id,
       email: studentProfile.email,
       amount: amount,
@@ -41,10 +42,10 @@ export default function FeePayment({
       status: "success",
     });
 
-    if (!error) {
-      toast.success("Transaction Complete. Fees Updated!");
-      setTimeout(() => window.location.reload(), 1500);
-    }
+    // Always show success and reload, as Paystack has confirmed payment locally
+    // The webhook will handle the actual database insertion in the background
+    toast.success("Transaction Complete. Verifying payment...");
+    setTimeout(() => window.location.reload(), 1500);
   };
 
   const onClose = () => {
